@@ -1,6 +1,8 @@
 package com.londonappbrewery.quizzler;
 
         import android.app.Activity;
+        import android.app.AlertDialog;
+        import android.content.DialogInterface;
         import android.os.Bundle;
         import android.view.View;
         import android.widget.Button;
@@ -74,6 +76,7 @@ public class MainActivity extends Activity {
     //new unique method for updating questions after each tap
     private void updateQuestion(){
         arrayIndex = (arrayIndex + 1) % mQuestionsDB.length;
+        gameOverAlert(arrayIndex);
         mQuestionTextView.setText(mQuestionsDB[arrayIndex].getQuiestionID());
         progressBar.incrementProgressBy(PROGRESS_BAR_INCREMENT);
         scoreTextView.setText("Score  " + mScore + "/" + mQuestionsDB.length);
@@ -87,6 +90,22 @@ public class MainActivity extends Activity {
             mScore += 1;
         } else {
             Toast.makeText(getApplicationContext(), R.string.incorrect_toast, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void gameOverAlert(int arrayIndex) {
+        if (arrayIndex == 0) {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setTitle("That's it! :)");
+            alertDialog.setCancelable(false);
+            alertDialog.setMessage("You scored " + mScore + " points!");
+            alertDialog.setPositiveButton("Close Application", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    finish();
+                }
+            });
+            alertDialog.show();
         }
     }
 }
