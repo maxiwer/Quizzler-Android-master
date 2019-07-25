@@ -45,6 +45,15 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // to save current state of activity when screen is tilted
+        if (savedInstanceState != null) {
+            mScore = savedInstanceState.getInt("ScoreKey");
+            arrayIndex = savedInstanceState.getInt("ArrayIndexKey");
+        } else {
+            mScore = 0;
+            arrayIndex = 0;
+        }
+
         //2 - findViewById() & 3 - casting to required type
         mTrueButton = (Button) findViewById(R.id.true_button);
         mFalseButton = (Button) findViewById(R.id.false_button);
@@ -54,6 +63,7 @@ public class MainActivity extends Activity {
 
         //Setting text to main TextView from array of questions
         mQuestionTextView.setText(mQuestionsDB[arrayIndex].getQuiestionID());
+        scoreTextView.setText("Score " + mScore + "/" + mQuestionsDB.length);
 
         //implementing Toast
         mTrueButton.setOnClickListener(new View.OnClickListener() {
@@ -73,15 +83,6 @@ public class MainActivity extends Activity {
         });
     }
 
-    //new unique method for updating questions after each tap
-    private void updateQuestion(){
-        arrayIndex = (arrayIndex + 1) % mQuestionsDB.length;
-        gameOverAlert(arrayIndex);
-        mQuestionTextView.setText(mQuestionsDB[arrayIndex].getQuiestionID());
-        progressBar.incrementProgressBy(PROGRESS_BAR_INCREMENT);
-        scoreTextView.setText("Score  " + mScore + "/" + mQuestionsDB.length);
-    }
-
     //For checking whether user's tap correct
     private void checkAnswer(boolean usersSelection) {
         boolean correctAnswer = mQuestionsDB[arrayIndex].isTrueFalse();
@@ -93,6 +94,25 @@ public class MainActivity extends Activity {
         }
     }
 
+    //new unique method for updating questions after each tap
+    private void updateQuestion(){
+        arrayIndex = (arrayIndex + 1) % mQuestionsDB.length;
+        gameOverAlert(arrayIndex);
+        mQuestionTextView.setText(mQuestionsDB[arrayIndex].getQuiestionID());
+        progressBar.incrementProgressBy(PROGRESS_BAR_INCREMENT);
+        scoreTextView.setText("Score  " + mScore + "/" + mQuestionsDB.length);
+    }
+
+    //to save current state of activity when screen is tilted
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt("ScoreKey", mScore);
+        outState.putInt("ArrayIndexKey", arrayIndex);
+    }
+
+    //method running when game is over
     private void gameOverAlert(int arrayIndex) {
         if (arrayIndex == 0) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
